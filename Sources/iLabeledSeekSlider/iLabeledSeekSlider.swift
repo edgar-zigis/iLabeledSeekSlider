@@ -250,7 +250,10 @@ class iLabeledSeekSlider: UIView {
     
     public override func draw(_ rect: CGRect) {
         super.draw(rect)
+        let x = actualXPosition ?? getActiveX(in: rect, currentValue: actualFractionalValue)
+        
         drawInactiveTrack(in: rect)
+        drawThumbSlider(in: rect, x: x)
     }
     
     private func drawInactiveTrack(in rect: CGRect) {
@@ -267,6 +270,36 @@ class iLabeledSeekSlider: UIView {
         context?.fillPath()
         
         context?.restoreGState()
+    }
+    
+    private func drawThumbSlider(in rect: CGRect, x: CGFloat) {
+        let context = UIGraphicsGetCurrentContext()
+        
+        context?.saveGState()
+        
+        let centerX = min(
+            rect.width - thumbSliderRadius - sidePadding,
+            max(sidePadding + thumbSliderRadius, x + sidePadding / 2)
+        )
+        
+        let shadowColor = UIColor(red:0.27, green:0.27, blue:0.27, alpha:0.27)
+        let ellipseRect = CGRect(x: centerX - thumbSliderRadius / 2, y: 0, width: thumbSliderRadius * 2, height: thumbSliderRadius * 2)
+        
+        context?.setShadow(
+            offset: CGSize(width: 0, height: 0),
+            blur: 6,
+            color: shadowColor.cgColor
+        )
+        context?.setFillColor(thumbSliderBackgroundColor.cgColor)
+        context?.fillEllipse(in: ellipseRect)
+        
+        context?.restoreGState()
+    }
+    
+    private func getActiveX(in rect: CGRect, currentValue: Int) -> CGFloat {
+        let slidingAreaWidth = rect.width - sidePadding - thumbSliderRadius
+        let progress = CGFloat(currentValue - minValue) / CGFloat(maxValue - minValue)
+        return slidingAreaWidth * progress
     }
     
     private func getDisplayValue() -> Int {
