@@ -240,4 +240,36 @@ class iLabeledSeekSlider: UIView {
 
     private let trackHeight: CGFloat = 4
     private let thumbSliderRadius: CGFloat = 12
+    
+    //  MARK: - UI methods -
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        backgroundColor = .clear
+    }
+    
+    public override func draw(_ rect: CGRect) {
+        super.draw(rect)
+        drawInactiveTrack(in: rect)
+    }
+    
+    private func drawInactiveTrack(in rect: CGRect) {
+        let context = UIGraphicsGetCurrentContext()
+        
+        context?.saveGState()
+
+        let rectangle = CGRect(x: sidePadding, y: 0, width: rect.width - sidePadding * 2, height: trackHeight)
+        let path = UIBezierPath(roundedRect: rectangle, cornerRadius: trackHeight / 2).cgPath
+
+        context?.addPath(path)
+        context?.setFillColor(inactiveTrackColor.cgColor)
+        context?.closePath()
+        context?.fillPath()
+        
+        context?.restoreGState()
+    }
+    
+    private func getDisplayValue() -> Int {
+        return actualFractionalValue
+    }
 }
