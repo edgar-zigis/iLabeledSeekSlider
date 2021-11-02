@@ -125,6 +125,14 @@ class iLabeledSeekSlider: UIView {
         }
     }
     /**
+     *  Slider track height
+    */
+    open var trackHeight: CGFloat = 4 {
+        didSet {
+            setNeedsDisplay()
+        }
+    }
+    /**
      *  Already filled track color
     */
     open var activeTrackColor = UIColor(red: 1.0, green: 0.14, blue: 0.0, alpha: 1.0) {
@@ -136,6 +144,14 @@ class iLabeledSeekSlider: UIView {
      *  Yet not filled track color
      */
     open var inactiveTrackColor = UIColor(red: 0.91, green: 0.91, blue: 0.91, alpha: 1.0) {
+        didSet {
+            setNeedsDisplay()
+        }
+    }
+    /**
+     *  Slider thumb slider radius
+    */
+    open var thumbSliderRadius: CGFloat = 12 {
         didSet {
             setNeedsDisplay()
         }
@@ -254,15 +270,18 @@ class iLabeledSeekSlider: UIView {
     private let bubbleHeight: CGFloat = 26
     private let minimumBubbleWidth: CGFloat = 84
     private let bubbleTextPadding: CGFloat = 16
-
-    private let trackHeight: CGFloat = 4
-    private let thumbSliderRadius: CGFloat = 12
     
     private var bubbleText: NSString = ""
     private var bubblePathWidth: CGFloat = 0
     private var bubbleTextSize: CGSize = CGSize.zero
     
     private var titleTextSize: CGSize = CGSize.zero
+    
+    private let disabledRegularTextColor = UIColor(red: 0.62, green: 0.65, blue: 0.68, alpha: 1.0)
+    private let disabledBoldTextColor = UIColor(red: 0.10, green: 0.10, blue: 0.10, alpha: 1.0)
+    private let disabledInactiveColor = UIColor(red: 0.91, green: 0.91, blue: 0.91, alpha: 1.0)
+    private let disabledActiveColor = UIColor(red: 0.4, green: 0.4, blue: 0.4, alpha: 1.0)
+    private let disabledThumbSliderColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
     
     //  MARK: - UI methods -
     
@@ -303,7 +322,7 @@ class iLabeledSeekSlider: UIView {
         let path = UIBezierPath(roundedRect: rectangle, cornerRadius: trackHeight / 2).cgPath
 
         context.addPath(path)
-        context.setFillColor(activeTrackColor.cgColor)
+        context.setFillColor(isDisabled ? disabledActiveColor.cgColor : activeTrackColor.cgColor)
         context.closePath()
         context.fillPath()
         
@@ -322,7 +341,7 @@ class iLabeledSeekSlider: UIView {
         let path = UIBezierPath(roundedRect: rectangle, cornerRadius: trackHeight / 2).cgPath
 
         context.addPath(path)
-        context.setFillColor(inactiveTrackColor.cgColor)
+        context.setFillColor(isDisabled ? disabledInactiveColor.cgColor : inactiveTrackColor.cgColor)
         context.closePath()
         context.fillPath()
         
@@ -350,7 +369,7 @@ class iLabeledSeekSlider: UIView {
             blur: 6,
             color: shadowColor.cgColor
         )
-        context.setFillColor(thumbSliderBackgroundColor.cgColor)
+        context.setFillColor(isDisabled ? disabledThumbSliderColor.cgColor : thumbSliderBackgroundColor.cgColor)
         context.fillEllipse(in: ellipseRect)
         
         context.restoreGState()
@@ -365,7 +384,7 @@ class iLabeledSeekSlider: UIView {
         
         context.setLineJoin(.round)
         context.setLineWidth(bubbleStrokeWidth)
-        context.setStrokeColor(bubbleOutlineColor.cgColor)
+        context.setStrokeColor(isDisabled ? disabledInactiveColor.cgColor : bubbleOutlineColor.cgColor)
         context.setFillColor(UIColor.clear.cgColor)
         
         context.beginPath()
@@ -453,7 +472,7 @@ class iLabeledSeekSlider: UIView {
         
         let attributes = [
             NSAttributedString.Key.font : bubbleValueTextFont,
-            NSAttributedString.Key.foregroundColor : bubbleValueTextColor
+            NSAttributedString.Key.foregroundColor : isDisabled ? disabledBoldTextColor : bubbleValueTextColor
         ]
         bubbleTextSize = bubbleText.size(withAttributes: attributes)
         bubbleText.draw(
@@ -469,7 +488,7 @@ class iLabeledSeekSlider: UIView {
         
         let attributes = [
             NSAttributedString.Key.font : titleTextFont,
-            NSAttributedString.Key.foregroundColor : titleTextColor
+            NSAttributedString.Key.foregroundColor : isDisabled ? disabledRegularTextColor : titleTextColor
         ]
         title.draw(
             at: CGPoint(x: sidePadding, y: getTitleLabelTextVerticalOffset()),
@@ -487,7 +506,7 @@ class iLabeledSeekSlider: UIView {
             at: CGPoint(x: sidePadding, y: getRangeTextVerticalOffset()),
             withAttributes: [
                 NSAttributedString.Key.font : rangeValueTextFont,
-                NSAttributedString.Key.foregroundColor : rangeValueTextColor
+                NSAttributedString.Key.foregroundColor : isDisabled ? disabledRegularTextColor : titleTextColor
             ]
         )
         
@@ -500,7 +519,7 @@ class iLabeledSeekSlider: UIView {
         let text = getUnitValue(value: maxValue)
         let attributes = [
             NSAttributedString.Key.font : rangeValueTextFont,
-            NSAttributedString.Key.foregroundColor : rangeValueTextColor
+            NSAttributedString.Key.foregroundColor : isDisabled ? disabledRegularTextColor : titleTextColor
         ]
         let textSize = text.size(withAttributes: attributes)
         
@@ -514,7 +533,7 @@ class iLabeledSeekSlider: UIView {
     
     private func getUnitValue(value: Int) -> NSString {
         if unitPosition == .front {
-            return "\(unit)\(value)" as NSString
+            return "\(unit) \(value)" as NSString
         }
         return "\(value) \(unit)" as NSString
     }
@@ -572,6 +591,9 @@ class iLabeledSeekSlider: UIView {
     //  MARK: Gestures
     
     @objc private func onPan(_ recognizer: UIPanGestureRecognizer) {
+        guard !isDisabled else {
+            return
+        }
         if recognizer.state == .began {
             lastSliderLocation = getInitialX()
             let recognizerX = recognizer.location(in: self).x
@@ -586,6 +608,9 @@ class iLabeledSeekSlider: UIView {
     }
     
     @objc private func onTap(_ recognizer: UITapGestureRecognizer) {
+        guard !isDisabled else {
+            return
+        }
         positionLayers(at: recognizer.location(in: self).x)
     }
     
