@@ -27,5 +27,6 @@ class ViewControllerWithoutStoryBoard: UIViewController {
     
     private func applyStyle(to v: iLabeledSeekSlider) {
         v.title = "Amount"
+        v.unit = "€"
     }
 }
