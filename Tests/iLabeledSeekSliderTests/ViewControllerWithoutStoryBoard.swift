@@ -31,5 +31,8 @@ class ViewControllerWithoutStoryBoard: UIViewController {
         v.minValue = 100
         v.maxValue = 1000
         v.defaultValue = 550
+        v.limitValue = 850
+        v.slidingInterval = 50
+        v.valuesToSkip = [300, 350]
     }
 }

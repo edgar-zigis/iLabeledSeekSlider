@@ -242,6 +242,10 @@ class iLabeledSeekSlider: UIView {
     private let trackHeight: CGFloat = 4
     private let thumbSliderRadius: CGFloat = 12
     
+    private var bubbleText: NSString = ""
+    private var bubblePathWidth: CGFloat = 0
+    private var bubbleTextSize: CGSize = CGSize.zero
+    
     private var titleTextSize: CGSize = CGSize.zero
     
     //  MARK: - UI methods -
@@ -258,6 +262,7 @@ class iLabeledSeekSlider: UIView {
         }
         let x = getInitialX()
         
+        drawBubbleValue(in: rect, context: context, x: x)
         drawTitleLabel(context: context)
         drawInactiveTrack(in: rect, context: context)
         drawActiveTrack(in: rect, context: context, x: x)
@@ -331,6 +336,48 @@ class iLabeledSeekSlider: UIView {
         context.restoreGState()
     }
     
+    private func drawBubbleValue(in rect: CGRect, context: CGContext, x: CGFloat) {
+        let displayValue = getDisplayValue()
+        
+        if valuesToSkip.contains(displayValue) {
+            drawBubbleValueOnCanvas(in: rect, context: context, x: x)
+            return
+        }
+        
+        let previousText = bubbleText
+        if let limitValue = limitValue, actualFractionalValue == limitValue && !allowLimitValueBypass {
+            if vibrateOnLimitReached {
+                if !bubbleText.contains(String(limitValue)) && previousText.length > 0 {
+                    //  vibrate
+                }
+            }
+            bubbleText = "\(limitValueIndicator) \(getUnitValue(value: limitValue))" as NSString
+            currentValue = limitValue
+        } else {
+            bubbleText = getUnitValue(value: displayValue)
+            currentValue = displayValue
+        }
+        if previousText != bubbleText && previousText.length > 0 {
+            onValueChanged(currentValue)
+        }
+        
+        drawBubbleValueOnCanvas(in: rect, context: context, x: x)
+    }
+    
+    private func drawBubbleValueOnCanvas(in rect: CGRect, context: CGContext, x: CGFloat) {
+        context.saveGState()
+        
+        let attributes = [
+            NSAttributedString.Key.font : bubbleValueTextFont,
+            NSAttributedString.Key.foregroundColor : bubbleValueTextColor
+        ]
+        bubbleTextSize = bubbleText.size(withAttributes: attributes)
+        bubbleText.draw(
+            at: CGPoint(x: getBubbleTextHorizontalOffset(in: rect, x: x), y: getBubbleTextVerticalOffset()),
+            withAttributes: attributes
+        )
+    }
+    
     private func drawTitleLabel(context: CGContext) {
         context.saveGState()
         
@@ -397,7 +444,7 @@ class iLabeledSeekSlider: UIView {
     }
     
     private func getDisplayValue() -> Int {
-        return actualFractionalValue
+        return (actualFractionalValue / slidingInterval) * slidingInterval
     }
     
     private func getTitleLabelTextVerticalOffset() -> CGFloat {
@@ -410,6 +457,21 @@ class iLabeledSeekSlider: UIView {
     
     private func getSlidingTrackVerticalOffset() -> CGFloat {
         return getTitleLabelTextVerticalOffset() + titleTextSize.height + thumbSliderRadius + 2
+    }
+    
+    private func getBubbleTextVerticalOffset() -> CGFloat {
+        return (bubbleHeight - bubbleTextSize.height) / 2 - 2
+    }
+    
+    private func getBubbleTextHorizontalOffset(in rect: CGRect, x: CGFloat) -> CGFloat {
+        bubblePathWidth = max(minimumBubbleWidth, bubbleTextSize.width + bubbleTextPadding * 2)
+        return min(
+            rect.width - sidePadding / 2 - bubbleTextSize.width - ((bubblePathWidth - bubbleTextSize.width) / 2),
+            max(
+                bubblePathWidth / 2 - bubbleTextSize.width / 2 + sidePadding / 2,
+                x - bubbleTextSize.width / 2 + sidePadding * 0.75
+            )
+        )
     }
     
     //  MARK: Gestures
