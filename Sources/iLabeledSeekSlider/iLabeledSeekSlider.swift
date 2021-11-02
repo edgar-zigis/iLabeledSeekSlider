@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AudioToolbox
 
 class iLabeledSeekSlider: UIView {
     
@@ -451,7 +452,7 @@ class iLabeledSeekSlider: UIView {
         if let limitValue = limitValue, actualFractionalValue == limitValue && !allowLimitValueBypass {
             if vibrateOnLimitReached {
                 if !bubbleText.contains(String(limitValue)) && previousText.length > 0 {
-                    //  vibrate
+                    vibrate()
                 }
             }
             bubbleText = "\(limitValueIndicator) \(getUnitValue(value: limitValue))" as NSString
@@ -642,6 +643,16 @@ class iLabeledSeekSlider: UIView {
         }
         
         setNeedsDisplay()
+    }
+    
+    private func vibrate() {
+        if #available(iOS 10.0, *) {
+            let impactFeedbackgenerator = UIImpactFeedbackGenerator(style: .light)
+            impactFeedbackgenerator.prepare()
+            impactFeedbackgenerator.impactOccurred()
+        } else {
+            AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
+        }
     }
     
     //  MARK: Init
