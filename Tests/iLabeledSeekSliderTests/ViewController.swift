@@ -11,14 +11,14 @@ import iLabeledSeekSlider
 
 class ViewController: UIViewController {
 
+    @IBOutlet weak var slider: iLabeledSeekSlider!
     @IBOutlet weak var versionWithoutStoryBoardButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
-            self.present(ViewControllerWithoutStoryBoard(), animated: true, completion: nil)
-        })
+        slider.onValueChanged = { value in
+            print("Slider value: \(value)")
+        }
     }
     
     @IBAction func onVersionWithoutStoryBoard(_ sender: Any) {

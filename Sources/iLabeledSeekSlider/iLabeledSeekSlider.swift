@@ -9,6 +9,7 @@
 import UIKit
 import AudioToolbox
 
+@IBDesignable
 class iLabeledSeekSlider: UIView {
     
     //  MARK: - Open variables -
@@ -16,6 +17,7 @@ class iLabeledSeekSlider: UIView {
     /**
      *  Lower range value also displayed in the left corner
      */
+    @IBInspectable
     open var minValue: Int = 0 {
         didSet {
             if oldValue != minValue {
@@ -30,6 +32,7 @@ class iLabeledSeekSlider: UIView {
     /**
      *  Upper range value also displayed in the right corner
      */
+    @IBInspectable
     open var maxValue: Int = 100 {
         didSet {
             if oldValue != maxValue {
@@ -44,6 +47,7 @@ class iLabeledSeekSlider: UIView {
     /**
      *  Default value which will be displayed during the initial draw
      */
+    @IBInspectable
     open var defaultValue: Int {
         set {
             if _defaultValue != newValue || _defaultValue != getDisplayValue() {
@@ -78,6 +82,7 @@ class iLabeledSeekSlider: UIView {
     /**
      *  Text label which indicates that the @param limitValue is reached
     */
+    @IBInspectable
     open var limitValueIndicator: String = "Max" {
         didSet {
             setNeedsDisplay()
@@ -86,14 +91,17 @@ class iLabeledSeekSlider: UIView {
     /**
      *  Allows sliding past @param limitValue if needed
     */
+    @IBInspectable
     open var allowLimitValueBypass: Bool = false
     /**
      *  Toggles vibration after @param limitValue is reached
     */
+    @IBInspectable
     open var vibrateOnLimitReached: Bool = true
     /**
      *  Slider title label value
     */
+    @IBInspectable
     open var title: NSString = "" {
         didSet {
             setNeedsDisplay()
@@ -103,6 +111,7 @@ class iLabeledSeekSlider: UIView {
      *  Slider unit label value
      *  Will be set near the @param minValue and @param maxValue
     */
+    @IBInspectable
     open var unit: String = "" {
         didSet {
             setNeedsDisplay()
@@ -120,6 +129,7 @@ class iLabeledSeekSlider: UIView {
     /**
      *  Will disable user interaction and grayscale whole view
     */
+    @IBInspectable
     open var isDisabled: Bool = false {
         didSet {
             setNeedsDisplay()
@@ -128,6 +138,7 @@ class iLabeledSeekSlider: UIView {
     /**
      *  Slider track height
     */
+    @IBInspectable
     open var trackHeight: CGFloat = 4 {
         didSet {
             setNeedsDisplay()
@@ -136,6 +147,7 @@ class iLabeledSeekSlider: UIView {
     /**
      *  Already filled track color
     */
+    @IBInspectable
     open var activeTrackColor = UIColor(red: 1.0, green: 0.14, blue: 0.0, alpha: 1.0) {
         didSet {
             setNeedsDisplay()
@@ -144,6 +156,7 @@ class iLabeledSeekSlider: UIView {
     /**
      *  Yet not filled track color
      */
+    @IBInspectable
     open var inactiveTrackColor = UIColor(red: 0.91, green: 0.91, blue: 0.91, alpha: 1.0) {
         didSet {
             setNeedsDisplay()
@@ -152,6 +165,7 @@ class iLabeledSeekSlider: UIView {
     /**
      *  Slider thumb slider radius
     */
+    @IBInspectable
     open var thumbSliderRadius: CGFloat = 12 {
         didSet {
             setNeedsDisplay()
@@ -160,6 +174,7 @@ class iLabeledSeekSlider: UIView {
     /**
      *  Thumb slider background color
     */
+    @IBInspectable
     open var thumbSliderBackgroundColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0) {
         didSet {
             setNeedsDisplay()
@@ -168,6 +183,7 @@ class iLabeledSeekSlider: UIView {
     /**
      *  Font for UITextViews containing @param minValue and @param maValue
     */
+    @IBInspectable
     open var rangeValueTextFont = UIFont.systemFont(ofSize: 12) {
         didSet {
             setNeedsDisplay()
@@ -176,6 +192,7 @@ class iLabeledSeekSlider: UIView {
     /**
      *  Text color for UITextViews containing @param minValue and @param maValue
     */
+    @IBInspectable
     open var rangeValueTextColor = UIColor(red: 0.62, green: 0.65, blue: 0.68, alpha: 1.0) {
         didSet {
             setNeedsDisplay()
@@ -184,6 +201,7 @@ class iLabeledSeekSlider: UIView {
     /**
      *  Font for UITextView containing @param title
     */
+    @IBInspectable
     open var titleTextFont = UIFont.systemFont(ofSize: 12) {
         didSet {
             setNeedsDisplay()
@@ -192,6 +210,7 @@ class iLabeledSeekSlider: UIView {
     /**
      *  Text color for UITextView containing @param title
     */
+    @IBInspectable
     open var titleTextColor = UIColor(red: 0.62, green: 0.65, blue: 0.68, alpha: 1.0) {
         didSet {
             setNeedsDisplay()
@@ -200,6 +219,7 @@ class iLabeledSeekSlider: UIView {
     /**
      *  Current value bubble outline color
     */
+    @IBInspectable
     open var bubbleOutlineColor = UIColor(red: 0.91, green: 0.91, blue: 0.91, alpha: 1.0) {
         didSet {
             setNeedsDisplay()
@@ -208,6 +228,7 @@ class iLabeledSeekSlider: UIView {
     /**
      *  Current value bubble stroke width
     */
+    @IBInspectable
     open var bubbleStrokeWidth: CGFloat = 2 {
         didSet {
             setNeedsDisplay()
@@ -216,6 +237,7 @@ class iLabeledSeekSlider: UIView {
     /**
      *  Current value bubble corner radius
     */
+    @IBInspectable
     open var bubbleCornerRadius: CGFloat = 5 {
         didSet {
             setNeedsDisplay()
@@ -224,6 +246,7 @@ class iLabeledSeekSlider: UIView {
     /**
      *  Current value bubble text font
     */
+    @IBInspectable
     open var bubbleValueTextFont = UIFont.boldSystemFont(ofSize: 12) {
         didSet {
             setNeedsDisplay()
@@ -232,6 +255,7 @@ class iLabeledSeekSlider: UIView {
     /**
      *  Current value bubble text color
     */
+    @IBInspectable
     open var bubbleValueTextColor = UIColor(red: 0.10, green: 0.10, blue: 0.10, alpha: 1.0) {
         didSet {
             setNeedsDisplay()
@@ -248,6 +272,7 @@ class iLabeledSeekSlider: UIView {
      *  Sliding interval value.
      *  For example if set to 50, sliding values will be 0, 50, 100 etc.
     */
+    @IBInspectable
     open var slidingInterval: Int = 1
     /**
      *  Callback reporting changed values upstream
@@ -556,15 +581,15 @@ class iLabeledSeekSlider: UIView {
     }
     
     private func getTitleLabelTextVerticalOffset() -> CGFloat {
-        return bubbleHeight + topPadding + 1
+        return bubbleHeight + topPadding + 2
     }
     
     private func getRangeTextVerticalOffset() -> CGFloat {
-        return getSlidingTrackVerticalOffset() + trackHeight / 2 + thumbSliderRadius + 2
+        return getSlidingTrackVerticalOffset() + trackHeight / 2 + thumbSliderRadius + 3
     }
     
     private func getSlidingTrackVerticalOffset() -> CGFloat {
-        return getTitleLabelTextVerticalOffset() + titleTextSize.height + thumbSliderRadius + 2
+        return getTitleLabelTextVerticalOffset() + titleTextSize.height + thumbSliderRadius + 3
     }
     
     private func getBubbleHorizontalOffset(in rect: CGRect, x: CGFloat) -> CGFloat {

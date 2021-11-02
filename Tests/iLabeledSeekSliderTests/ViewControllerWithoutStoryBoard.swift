@@ -15,7 +15,9 @@ class ViewControllerWithoutStoryBoard: UIViewController {
         super.viewDidLoad()
         
         let slider = iLabeledSeekSlider()
-        
+        slider.onValueChanged = { value in
+            print("Slider value: \(value)")
+        }
         applyStyle(to: slider)
         view.addSubview(slider)
         
