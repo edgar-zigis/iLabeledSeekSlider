@@ -257,7 +257,9 @@ class iLabeledSeekSlider: UIView {
         
         drawInactiveTrack(in: rect, context: context)
         drawThumbSlider(in: rect, context: context, x: x)
-        drawTitleLabel(in: rect, context: context)
+        drawTitleLabel(context: context)
+        drawMinRangeText(context: context)
+        drawMaxRangeText(in: rect, context: context)
     }
     
     private func drawInactiveTrack(in rect: CGRect, context: CGContext) {
@@ -282,8 +284,13 @@ class iLabeledSeekSlider: UIView {
             max(sidePadding + thumbSliderRadius, x + sidePadding / 2)
         )
         
-        let shadowColor = UIColor(red:0.27, green:0.27, blue:0.27, alpha:0.27)
-        let ellipseRect = CGRect(x: centerX - thumbSliderRadius / 2, y: 0, width: thumbSliderRadius * 2, height: thumbSliderRadius * 2)
+        let shadowColor = UIColor(red: 0.27, green: 0.27, blue: 0.27, alpha: 0.27)
+        let ellipseRect = CGRect(
+            x: centerX - thumbSliderRadius / 2,
+            y: 0,
+            width: thumbSliderRadius * 2,
+            height: thumbSliderRadius * 2
+        )
         
         context.setShadow(
             offset: CGSize(width: 0, height: 0),
@@ -296,7 +303,7 @@ class iLabeledSeekSlider: UIView {
         context.restoreGState()
     }
     
-    private func drawTitleLabel(in rect: CGRect, context: CGContext) {
+    private func drawTitleLabel(context: CGContext) {
         context.saveGState()
         
         title.draw(
@@ -308,6 +315,45 @@ class iLabeledSeekSlider: UIView {
         )
         
         context.restoreGState()
+    }
+    
+    private func drawMinRangeText(context: CGContext) {
+        context.saveGState()
+        
+        getUnitValue(value: minValue).draw(
+            at: CGPoint(x: sidePadding, y: 20),
+            withAttributes: [
+                NSAttributedString.Key.font : rangeValueTextFont,
+                NSAttributedString.Key.foregroundColor : rangeValueTextColor
+            ]
+        )
+        
+        context.restoreGState()
+    }
+    
+    private func drawMaxRangeText(in rect: CGRect, context: CGContext) {
+        context.saveGState()
+        
+        let text = getUnitValue(value: maxValue)
+        let attributes = [
+            NSAttributedString.Key.font : rangeValueTextFont,
+            NSAttributedString.Key.foregroundColor : rangeValueTextColor
+        ]
+        let textSize = text.size(withAttributes: attributes)
+        
+        text.draw(
+            at: CGPoint(x: rect.width - sidePadding - textSize.width, y: 20),
+            withAttributes: attributes
+        )
+        
+        context.restoreGState()
+    }
+    
+    private func getUnitValue(value: Int) -> NSString {
+        if unitPosition == .front {
+            return "\(unit)\(value)" as NSString
+        }
+        return "\(value) \(unit)" as NSString
     }
     
     private func getActiveX(in rect: CGRect, currentValue: Int) -> CGFloat {
