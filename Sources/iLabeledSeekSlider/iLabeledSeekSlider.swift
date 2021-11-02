@@ -93,7 +93,7 @@ class iLabeledSeekSlider: UIView {
     /**
      *  Slider title label value
     */
-    open var title: String = "" {
+    open var title: NSString = "" {
         didSet {
             setNeedsDisplay()
         }
@@ -250,32 +250,32 @@ class iLabeledSeekSlider: UIView {
     
     public override func draw(_ rect: CGRect) {
         super.draw(rect)
+        guard let context = UIGraphicsGetCurrentContext() else {
+            return
+        }
         let x = actualXPosition ?? getActiveX(in: rect, currentValue: actualFractionalValue)
         
-        drawInactiveTrack(in: rect)
-        drawThumbSlider(in: rect, x: x)
+        drawInactiveTrack(in: rect, context: context)
+        drawThumbSlider(in: rect, context: context, x: x)
+        drawTitleLabel(in: rect, context: context)
     }
     
-    private func drawInactiveTrack(in rect: CGRect) {
-        let context = UIGraphicsGetCurrentContext()
-        
-        context?.saveGState()
+    private func drawInactiveTrack(in rect: CGRect, context: CGContext) {
+        context.saveGState()
 
         let rectangle = CGRect(x: sidePadding, y: 0, width: rect.width - sidePadding * 2, height: trackHeight)
         let path = UIBezierPath(roundedRect: rectangle, cornerRadius: trackHeight / 2).cgPath
 
-        context?.addPath(path)
-        context?.setFillColor(inactiveTrackColor.cgColor)
-        context?.closePath()
-        context?.fillPath()
+        context.addPath(path)
+        context.setFillColor(inactiveTrackColor.cgColor)
+        context.closePath()
+        context.fillPath()
         
-        context?.restoreGState()
+        context.restoreGState()
     }
     
-    private func drawThumbSlider(in rect: CGRect, x: CGFloat) {
-        let context = UIGraphicsGetCurrentContext()
-        
-        context?.saveGState()
+    private func drawThumbSlider(in rect: CGRect, context: CGContext, x: CGFloat) {
+        context.saveGState()
         
         let centerX = min(
             rect.width - thumbSliderRadius - sidePadding,
@@ -285,15 +285,29 @@ class iLabeledSeekSlider: UIView {
         let shadowColor = UIColor(red:0.27, green:0.27, blue:0.27, alpha:0.27)
         let ellipseRect = CGRect(x: centerX - thumbSliderRadius / 2, y: 0, width: thumbSliderRadius * 2, height: thumbSliderRadius * 2)
         
-        context?.setShadow(
+        context.setShadow(
             offset: CGSize(width: 0, height: 0),
             blur: 6,
             color: shadowColor.cgColor
         )
-        context?.setFillColor(thumbSliderBackgroundColor.cgColor)
-        context?.fillEllipse(in: ellipseRect)
+        context.setFillColor(thumbSliderBackgroundColor.cgColor)
+        context.fillEllipse(in: ellipseRect)
         
-        context?.restoreGState()
+        context.restoreGState()
+    }
+    
+    private func drawTitleLabel(in rect: CGRect, context: CGContext) {
+        context.saveGState()
+        
+        title.draw(
+            at: CGPoint(x: sidePadding, y: 0),
+            withAttributes: [
+                NSAttributedString.Key.font : titleTextFont,
+                NSAttributedString.Key.foregroundColor : titleTextColor
+            ]
+        )
+        
+        context.restoreGState()
     }
     
     private func getActiveX(in rect: CGRect, currentValue: Int) -> CGFloat {
