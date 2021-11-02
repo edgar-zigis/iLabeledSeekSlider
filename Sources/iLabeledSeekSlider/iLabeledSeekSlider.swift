@@ -241,6 +241,8 @@ class iLabeledSeekSlider: UIView {
     private let trackHeight: CGFloat = 4
     private let thumbSliderRadius: CGFloat = 12
     
+    private var titleTextSize: CGSize = CGSize.zero
+    
     //  MARK: - UI methods -
     
     override func layoutSubviews() {
@@ -268,7 +270,7 @@ class iLabeledSeekSlider: UIView {
 
         let rectangle = CGRect(
             x: sidePadding,
-            y: 0,
+            y: getSlidingTrackVerticalOffset(),
             width: min(rect.width - sidePadding, max(sidePadding, x)),
             height: trackHeight
         )
@@ -285,7 +287,12 @@ class iLabeledSeekSlider: UIView {
     private func drawInactiveTrack(in rect: CGRect, context: CGContext) {
         context.saveGState()
 
-        let rectangle = CGRect(x: sidePadding, y: 0, width: rect.width - sidePadding * 2, height: trackHeight)
+        let rectangle = CGRect(
+            x: sidePadding,
+            y: getSlidingTrackVerticalOffset(),
+            width: rect.width - sidePadding * 2,
+            height: trackHeight
+        )
         let path = UIBezierPath(roundedRect: rectangle, cornerRadius: trackHeight / 2).cgPath
 
         context.addPath(path)
@@ -307,7 +314,7 @@ class iLabeledSeekSlider: UIView {
         let shadowColor = UIColor(red: 0.27, green: 0.27, blue: 0.27, alpha: 0.27)
         let ellipseRect = CGRect(
             x: centerX - thumbSliderRadius / 2,
-            y: 0,
+            y: getSlidingTrackVerticalOffset() - thumbSliderRadius + 1,
             width: thumbSliderRadius * 2,
             height: thumbSliderRadius * 2
         )
@@ -326,13 +333,15 @@ class iLabeledSeekSlider: UIView {
     private func drawTitleLabel(context: CGContext) {
         context.saveGState()
         
+        let attributes = [
+            NSAttributedString.Key.font : titleTextFont,
+            NSAttributedString.Key.foregroundColor : titleTextColor
+        ]
         title.draw(
-            at: CGPoint(x: sidePadding, y: 0),
-            withAttributes: [
-                NSAttributedString.Key.font : titleTextFont,
-                NSAttributedString.Key.foregroundColor : titleTextColor
-            ]
+            at: CGPoint(x: sidePadding, y: getTitleLabelTextVerticalOffset()),
+            withAttributes: attributes
         )
+        titleTextSize = title.size(withAttributes: attributes)
         
         context.restoreGState()
     }
@@ -341,7 +350,7 @@ class iLabeledSeekSlider: UIView {
         context.saveGState()
         
         getUnitValue(value: minValue).draw(
-            at: CGPoint(x: sidePadding, y: 20),
+            at: CGPoint(x: sidePadding, y: getRangeTextVerticalOffset()),
             withAttributes: [
                 NSAttributedString.Key.font : rangeValueTextFont,
                 NSAttributedString.Key.foregroundColor : rangeValueTextColor
@@ -362,7 +371,7 @@ class iLabeledSeekSlider: UIView {
         let textSize = text.size(withAttributes: attributes)
         
         text.draw(
-            at: CGPoint(x: rect.width - sidePadding - textSize.width, y: 20),
+            at: CGPoint(x: rect.width - sidePadding - textSize.width, y: getRangeTextVerticalOffset()),
             withAttributes: attributes
         )
         
@@ -384,5 +393,17 @@ class iLabeledSeekSlider: UIView {
     
     private func getDisplayValue() -> Int {
         return actualFractionalValue
+    }
+    
+    private func getTitleLabelTextVerticalOffset() -> CGFloat {
+        return bubbleHeight + topPadding + 5
+    }
+    
+    private func getRangeTextVerticalOffset() -> CGFloat {
+        return getSlidingTrackVerticalOffset() - 2
+    }
+    
+    private func getSlidingTrackVerticalOffset() -> CGFloat {
+        return bubbleHeight + 8 + titleTextSize.height + 8 + thumbSliderRadius
     }
 }
