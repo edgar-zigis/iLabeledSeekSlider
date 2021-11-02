@@ -189,6 +189,22 @@ class iLabeledSeekSlider: UIView {
         }
     }
     /**
+     *  Current value bubble stroke width
+    */
+    open var bubbleStrokeWidth: CGFloat = 2 {
+        didSet {
+            setNeedsDisplay()
+        }
+    }
+    /**
+     *  Current value bubble corner radius
+    */
+    open var bubbleCornerRadius: CGFloat = 5 {
+        didSet {
+            setNeedsDisplay()
+        }
+    }
+    /**
      *  Current value bubble text font
     */
     open var bubbleValueTextFont = UIFont.boldSystemFont(ofSize: 12) {
@@ -260,6 +276,7 @@ class iLabeledSeekSlider: UIView {
         guard let context = UIGraphicsGetCurrentContext() else {
             return
         }
+        
         let x = getInitialX()
         
         drawBubbleValue(in: rect, context: context, x: x)
@@ -271,6 +288,8 @@ class iLabeledSeekSlider: UIView {
         drawMinRangeText(context: context)
         drawMaxRangeText(in: rect, context: context)
     }
+    
+    //  MARK: - Sliding track related stuff -
     
     private func drawActiveTrack(in rect: CGRect, context: CGContext, x: CGFloat) {
         context.saveGState()
@@ -337,25 +356,63 @@ class iLabeledSeekSlider: UIView {
         context.restoreGState()
     }
     
+    //  MARK: - Bubble related things -
+    
     private func drawBubbleOutline(in rect: CGRect, context: CGContext, x: CGFloat) {
         context.saveGState()
         
-        let strokeWidth: CGFloat = 2
-        let borderRadius: CGFloat = 8
         let horizontalOffset = getBubbleHorizontalOffset(in: rect, x: x)
         
         context.setLineJoin(.round)
-        context.setLineWidth(strokeWidth)
+        context.setLineWidth(bubbleStrokeWidth)
         context.setStrokeColor(bubbleOutlineColor.cgColor)
         context.setFillColor(UIColor.clear.cgColor)
         
         context.beginPath()
         
-        context.move(to: CGPoint(x: borderRadius + strokeWidth + horizontalOffset, y: strokeWidth))
-        context.addArc(tangent1End: CGPoint(x: bubblePathWidth - strokeWidth + horizontalOffset, y: strokeWidth), tangent2End: CGPoint(x: bubblePathWidth - strokeWidth + horizontalOffset, y: bubbleHeight - strokeWidth - 0.5), radius: borderRadius - strokeWidth)
-        context.addArc(tangent1End: CGPoint(x: bubblePathWidth - strokeWidth + horizontalOffset, y: bubbleHeight - strokeWidth) , tangent2End: CGPoint(x: strokeWidth + horizontalOffset, y: bubbleHeight - strokeWidth) , radius: borderRadius - strokeWidth)
-        context.addArc(tangent1End: CGPoint(x: strokeWidth + horizontalOffset, y: bubbleHeight - strokeWidth), tangent2End: CGPoint(x: strokeWidth + horizontalOffset, y: strokeWidth), radius: borderRadius - strokeWidth)
-        context.addArc(tangent1End: CGPoint(x: strokeWidth + horizontalOffset, y :strokeWidth), tangent2End: CGPoint(x: bubblePathWidth - strokeWidth + horizontalOffset  ,y: strokeWidth), radius: borderRadius - strokeWidth)
+        //  Draw first 1/2 of the bubble
+        
+        context.move(to: CGPoint(x: bubbleCornerRadius + bubbleStrokeWidth + horizontalOffset, y: bubbleStrokeWidth))
+        context.addArc(
+            tangent1End: CGPoint(x: bubblePathWidth - bubbleStrokeWidth + horizontalOffset, y: bubbleStrokeWidth),
+            tangent2End: CGPoint(x: bubblePathWidth - bubbleStrokeWidth + horizontalOffset, y: bubbleHeight - bubbleStrokeWidth),
+            radius: bubbleCornerRadius - bubbleStrokeWidth
+        )
+        context.addArc(
+            tangent1End: CGPoint(x: bubblePathWidth - bubbleStrokeWidth + horizontalOffset, y: bubbleHeight - bubbleStrokeWidth),
+            tangent2End: CGPoint(x: bubbleStrokeWidth + horizontalOffset, y: bubbleHeight - bubbleStrokeWidth),
+            radius: bubbleCornerRadius - bubbleStrokeWidth
+        )
+        
+        //  Draw tail
+        
+        let comparatorVar1 = x - (bubblePathWidth / 2 - sidePadding / 2)
+        let comparatorVar2 = sidePadding / 2
+        let comparatorVar3 = rect.width - sidePadding / 2 - bubblePathWidth
+        
+        var tailStart = bubblePathWidth / 2
+        if comparatorVar2 > comparatorVar1 {
+            tailStart = bubblePathWidth / 2 - min(sidePadding / 2 + thumbSliderRadius + 1, comparatorVar2 - comparatorVar1)
+        } else if comparatorVar1 > comparatorVar3 {
+            tailStart = bubblePathWidth / 2 + min(sidePadding / 2 + thumbSliderRadius + 1, comparatorVar1 - comparatorVar3)
+        }
+        
+        context.addLine(to: CGPoint(x: horizontalOffset + round(tailStart + 8 / 2), y: bubbleHeight - bubbleStrokeWidth))
+        context.addLine(to: CGPoint(x: horizontalOffset + round(tailStart), y: bubbleHeight - bubbleStrokeWidth + 4))
+        context.addLine(to: CGPoint(x: horizontalOffset + round(tailStart - 8 / 2), y: bubbleHeight - bubbleStrokeWidth))
+        
+        //  Draw second 1/2 of the bubble
+        
+        context.addArc(
+            tangent1End: CGPoint(x: bubbleStrokeWidth + horizontalOffset, y: bubbleHeight - bubbleStrokeWidth),
+            tangent2End: CGPoint(x: bubbleStrokeWidth + horizontalOffset, y: bubbleStrokeWidth),
+            radius: bubbleCornerRadius - bubbleStrokeWidth
+        )
+        context.addArc(
+            tangent1End: CGPoint(x: bubbleStrokeWidth + horizontalOffset, y: bubbleStrokeWidth),
+            tangent2End: CGPoint(x: bubblePathWidth - bubbleStrokeWidth + horizontalOffset, y: bubbleStrokeWidth),
+            radius: bubbleCornerRadius - bubbleStrokeWidth
+        )
         
         context.closePath()
         context.drawPath(using: CGPathDrawingMode.fillStroke)
@@ -404,6 +461,8 @@ class iLabeledSeekSlider: UIView {
             withAttributes: attributes
         )
     }
+    
+    //  MARK: - Text labels -
     
     private func drawTitleLabel(context: CGContext) {
         context.saveGState()
@@ -460,6 +519,12 @@ class iLabeledSeekSlider: UIView {
         return "\(value) \(unit)" as NSString
     }
     
+    private func getDisplayValue() -> Int {
+        return (actualFractionalValue / slidingInterval) * slidingInterval
+    }
+    
+    //  MARK: - Margin methods -
+    
     private func getActiveX(in rect: CGRect, currentValue: Int) -> CGFloat {
         let slidingAreaWidth = rect.width - sidePadding - thumbSliderRadius
         let progress = CGFloat(currentValue - minValue) / CGFloat(maxValue - minValue)
@@ -470,12 +535,8 @@ class iLabeledSeekSlider: UIView {
         return actualXPosition ?? getActiveX(in: frame, currentValue: actualFractionalValue)
     }
     
-    private func getDisplayValue() -> Int {
-        return (actualFractionalValue / slidingInterval) * slidingInterval
-    }
-    
     private func getTitleLabelTextVerticalOffset() -> CGFloat {
-        return bubbleHeight + topPadding + 5
+        return bubbleHeight + topPadding + 1
     }
     
     private func getRangeTextVerticalOffset() -> CGFloat {

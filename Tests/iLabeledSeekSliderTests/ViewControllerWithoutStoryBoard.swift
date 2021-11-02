@@ -19,7 +19,7 @@ class ViewControllerWithoutStoryBoard: UIViewController {
         let width = UIScreen.main.bounds.width
         
         applyStyle(to: slider)
-        slider.frame = CGRect(x: width * 0.05, y: 150, width: width * 0.9, height: 100)
+        slider.frame = CGRect(x: width * 0.05, y: 150, width: width * 0.9, height: 90)
         view.addSubview(slider)
         
         view.backgroundColor = .white
