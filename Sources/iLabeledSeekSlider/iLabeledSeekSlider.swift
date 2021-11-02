@@ -263,6 +263,7 @@ class iLabeledSeekSlider: UIView {
         let x = getInitialX()
         
         drawBubbleValue(in: rect, context: context, x: x)
+        drawBubbleOutline(in: rect, context: context, x: x)
         drawTitleLabel(context: context)
         drawInactiveTrack(in: rect, context: context)
         drawActiveTrack(in: rect, context: context, x: x)
@@ -332,6 +333,32 @@ class iLabeledSeekSlider: UIView {
         )
         context.setFillColor(thumbSliderBackgroundColor.cgColor)
         context.fillEllipse(in: ellipseRect)
+        
+        context.restoreGState()
+    }
+    
+    private func drawBubbleOutline(in rect: CGRect, context: CGContext, x: CGFloat) {
+        context.saveGState()
+        
+        let strokeWidth: CGFloat = 2
+        let borderRadius: CGFloat = 8
+        let horizontalOffset = getBubbleHorizontalOffset(in: rect, x: x)
+        
+        context.setLineJoin(.round)
+        context.setLineWidth(strokeWidth)
+        context.setStrokeColor(bubbleOutlineColor.cgColor)
+        context.setFillColor(UIColor.clear.cgColor)
+        
+        context.beginPath()
+        
+        context.move(to: CGPoint(x: borderRadius + strokeWidth + horizontalOffset, y: strokeWidth))
+        context.addArc(tangent1End: CGPoint(x: bubblePathWidth - strokeWidth + horizontalOffset, y: strokeWidth), tangent2End: CGPoint(x: bubblePathWidth - strokeWidth + horizontalOffset, y: bubbleHeight - strokeWidth - 0.5), radius: borderRadius - strokeWidth)
+        context.addArc(tangent1End: CGPoint(x: bubblePathWidth - strokeWidth + horizontalOffset, y: bubbleHeight - strokeWidth) , tangent2End: CGPoint(x: strokeWidth + horizontalOffset, y: bubbleHeight - strokeWidth) , radius: borderRadius - strokeWidth)
+        context.addArc(tangent1End: CGPoint(x: strokeWidth + horizontalOffset, y: bubbleHeight - strokeWidth), tangent2End: CGPoint(x: strokeWidth + horizontalOffset, y: strokeWidth), radius: borderRadius - strokeWidth)
+        context.addArc(tangent1End: CGPoint(x: strokeWidth + horizontalOffset, y :strokeWidth), tangent2End: CGPoint(x: bubblePathWidth - strokeWidth + horizontalOffset  ,y: strokeWidth), radius: borderRadius - strokeWidth)
+        
+        context.closePath()
+        context.drawPath(using: CGPathDrawingMode.fillStroke)
         
         context.restoreGState()
     }
@@ -459,8 +486,15 @@ class iLabeledSeekSlider: UIView {
         return getTitleLabelTextVerticalOffset() + titleTextSize.height + thumbSliderRadius + 2
     }
     
+    private func getBubbleHorizontalOffset(in rect: CGRect, x: CGFloat) -> CGFloat {
+        return min(
+            rect.width - sidePadding / 2 - bubblePathWidth,
+            max(sidePadding / 2, x - (bubblePathWidth / 2 - sidePadding * 0.75))
+        )
+    }
+    
     private func getBubbleTextVerticalOffset() -> CGFloat {
-        return (bubbleHeight - bubbleTextSize.height) / 2 - 2
+        return (bubbleHeight - bubbleTextSize.height) / 2
     }
     
     private func getBubbleTextHorizontalOffset(in rect: CGRect, x: CGFloat) -> CGFloat {
