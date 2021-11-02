@@ -231,6 +231,7 @@ class iLabeledSeekSlider: UIView {
     
     private var actualFractionalValue: Int = 50
     private var actualXPosition: CGFloat? = nil
+    private var lastSliderLocation: CGFloat = 0
     
     private let topPadding: CGFloat = 2
     private let sidePadding: CGFloat = 16
@@ -255,12 +256,12 @@ class iLabeledSeekSlider: UIView {
         guard let context = UIGraphicsGetCurrentContext() else {
             return
         }
-        let x = actualXPosition ?? getActiveX(in: rect, currentValue: actualFractionalValue)
+        let x = getInitialX()
         
+        drawTitleLabel(context: context)
         drawInactiveTrack(in: rect, context: context)
         drawActiveTrack(in: rect, context: context, x: x)
         drawThumbSlider(in: rect, context: context, x: x)
-        drawTitleLabel(context: context)
         drawMinRangeText(context: context)
         drawMaxRangeText(in: rect, context: context)
     }
@@ -271,7 +272,7 @@ class iLabeledSeekSlider: UIView {
         let rectangle = CGRect(
             x: sidePadding,
             y: getSlidingTrackVerticalOffset(),
-            width: min(rect.width - sidePadding, max(sidePadding, x)),
+            width: min(rect.width - sidePadding * 2, max(sidePadding, x)),
             height: trackHeight
         )
         let path = UIBezierPath(roundedRect: rectangle, cornerRadius: trackHeight / 2).cgPath
@@ -306,14 +307,14 @@ class iLabeledSeekSlider: UIView {
     private func drawThumbSlider(in rect: CGRect, context: CGContext, x: CGFloat) {
         context.saveGState()
         
-        let centerX = min(
-            rect.width - thumbSliderRadius - sidePadding,
-            max(sidePadding + thumbSliderRadius, x + sidePadding / 2)
+        let sliderX = min(
+            rect.width - thumbSliderRadius * 2 - sidePadding,
+            max(sidePadding, x)
         )
         
         let shadowColor = UIColor(red: 0.27, green: 0.27, blue: 0.27, alpha: 0.27)
         let ellipseRect = CGRect(
-            x: centerX - thumbSliderRadius / 2,
+            x: sliderX,
             y: getSlidingTrackVerticalOffset() - thumbSliderRadius + 1,
             width: thumbSliderRadius * 2,
             height: thumbSliderRadius * 2
@@ -391,6 +392,10 @@ class iLabeledSeekSlider: UIView {
         return slidingAreaWidth * progress
     }
     
+    private func getInitialX() -> CGFloat {
+        return actualXPosition ?? getActiveX(in: frame, currentValue: actualFractionalValue)
+    }
+    
     private func getDisplayValue() -> Int {
         return actualFractionalValue
     }
@@ -400,10 +405,77 @@ class iLabeledSeekSlider: UIView {
     }
     
     private func getRangeTextVerticalOffset() -> CGFloat {
-        return getSlidingTrackVerticalOffset() - 2
+        return getSlidingTrackVerticalOffset() + trackHeight / 2 + thumbSliderRadius + 2
     }
     
     private func getSlidingTrackVerticalOffset() -> CGFloat {
-        return bubbleHeight + 8 + titleTextSize.height + 8 + thumbSliderRadius
+        return getTitleLabelTextVerticalOffset() + titleTextSize.height + thumbSliderRadius + 2
+    }
+    
+    //  MARK: Gestures
+    
+    @objc private func onPan(_ recognizer: UIPanGestureRecognizer) {
+        if recognizer.state == .began {
+            lastSliderLocation = getInitialX()
+            let recognizerX = recognizer.location(in: self).x
+            if abs(lastSliderLocation - recognizerX) > thumbSliderRadius * 4 {
+                recognizer.isEnabled = false
+                recognizer.isEnabled = true
+            }
+        }
+        if recognizer.state != .cancelled {
+            positionLayers(at: lastSliderLocation + recognizer.translation(in: self).x)
+        }
+    }
+    
+    @objc private func onTap(_ recognizer: UITapGestureRecognizer) {
+        positionLayers(at: recognizer.location(in: self).x)
+    }
+    
+    private func positionLayers(at x: CGFloat) {
+        let relativeX = min(frame.width - sidePadding - thumbSliderRadius, max(0, x))
+        let slidingAreaWidth = frame.width - sidePadding - thumbSliderRadius
+        
+        let newValue = min(
+            maxValue,
+            max(
+                minValue,
+                minValue + Int(round(Double(CGFloat((maxValue - minValue)) * (relativeX / slidingAreaWidth))))
+            )
+        )
+        
+        if limitValue == nil || allowLimitValueBypass {
+            actualFractionalValue = newValue
+        } else {
+            actualFractionalValue = min(newValue, limitValue!)
+        }
+        if limitValue != nil && !allowLimitValueBypass {
+            if newValue <= limitValue! {
+                actualXPosition = relativeX
+            } else {
+                actualXPosition = getActiveX(in: frame, currentValue: limitValue!)
+            }
+        } else {
+            actualXPosition = relativeX
+        }
+        
+        setNeedsDisplay()
+    }
+    
+    //  MARK: Init
+        
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        addObservers()
+    }
+        
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        addObservers()
+    }
+    
+    private func addObservers() {
+        addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(onPan(_:))))
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onTap(_:))))
     }
 }
