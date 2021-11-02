@@ -256,10 +256,30 @@ class iLabeledSeekSlider: UIView {
         let x = actualXPosition ?? getActiveX(in: rect, currentValue: actualFractionalValue)
         
         drawInactiveTrack(in: rect, context: context)
+        drawActiveTrack(in: rect, context: context, x: x)
         drawThumbSlider(in: rect, context: context, x: x)
         drawTitleLabel(context: context)
         drawMinRangeText(context: context)
         drawMaxRangeText(in: rect, context: context)
+    }
+    
+    private func drawActiveTrack(in rect: CGRect, context: CGContext, x: CGFloat) {
+        context.saveGState()
+
+        let rectangle = CGRect(
+            x: sidePadding,
+            y: 0,
+            width: min(rect.width - sidePadding, max(sidePadding, x)),
+            height: trackHeight
+        )
+        let path = UIBezierPath(roundedRect: rectangle, cornerRadius: trackHeight / 2).cgPath
+
+        context.addPath(path)
+        context.setFillColor(activeTrackColor.cgColor)
+        context.closePath()
+        context.fillPath()
+        
+        context.restoreGState()
     }
     
     private func drawInactiveTrack(in rect: CGRect, context: CGContext) {
