@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name         = "iLabeledSeekSlider"
-  spec.version      = "1.0.1"
+  spec.version      = "1.0.2"
   spec.summary      = "Custom & highly configurable seek slider with sliding intervals, disabled state and every possible setting to tackle!"
 
   spec.homepage     = "https://github.com/edgar-zigis/iLabeledSeekSlider"
