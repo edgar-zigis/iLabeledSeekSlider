@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum UnitPosition {
+public enum UnitPosition {
     case front
     case back
 }
