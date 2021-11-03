@@ -311,7 +311,7 @@ public class iLabeledSeekSlider: UIView {
     
     //  MARK: - UI methods -
     
-    override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
         backgroundColor = .clear
     }
