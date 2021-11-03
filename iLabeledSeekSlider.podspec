@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name         = "iLabeledSeekSlider"
-  spec.version      = "1.0.0"
+  spec.version      = "1.0.1"
   spec.summary      = "Custom & highly configurable seek slider with sliding intervals, disabled state and every possible setting to tackle!"
 
   spec.homepage     = "https://github.com/edgar-zigis/iLabeledSeekSlider"
@@ -14,7 +14,7 @@ Pod::Spec.new do |spec|
   spec.ios.deployment_target = '9.0'
   spec.swift_version = '5.2'
   
-  spec.source       = { :git => "https://github.com/edgar-zigis/iLabeledSeekSlider", :tag => "#{spec.version}" }
+  spec.source       = { :git => "https://github.com/edgar-zigis/iLabeledSeekSlider.git", :tag => "#{spec.version}" }
 
   spec.source_files  = "Sources/iLabeledSeekSlider/**/*.{swift}"
 end
