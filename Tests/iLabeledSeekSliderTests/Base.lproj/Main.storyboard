@@ -18,35 +18,40 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" id="48f-1T-Ggz" customClass="iLabeledSeekSlider" customModule="iLabeledSeekSliderTest" customModuleProvider="target">
-                                <rect key="frame" x="19" y="96" width="374" height="68"/>
+                                <rect key="frame" x="19" y="150" width="374" height="90"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <edgeInsets key="layoutMargins" top="8" left="8" bottom="8" right="8"/>
                                 <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="string" keyPath="placeholder" value="E-mail"/>
-                                    <userDefinedRuntimeAttribute type="color" keyPath="inactiveHintColor">
-                                        <color key="value" systemColor="systemBackgroundColor"/>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="minValue">
+                                        <integer key="value" value="100"/>
                                     </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="color" keyPath="activeHintColor">
-                                        <color key="value" systemColor="linkColor"/>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="maxValue">
+                                        <integer key="value" value="1000"/>
                                     </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="color" keyPath="defaultBackgroundColor">
-                                        <color key="value" systemColor="tertiaryLabelColor"/>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="defaultValue">
+                                        <integer key="value" value="550"/>
                                     </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="color" keyPath="focusedBackgroundColor">
-                                        <color key="value" systemColor="systemGreenColor"/>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="allowLimitValueBypass" value="YES"/>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="limitValueIndicator" value="Max"/>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="title" value="Amount"/>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="vibrateOnLimitReached" value="YES"/>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="unit" value="€"/>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="isDisabled" value="NO"/>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="trackHeight">
+                                        <real key="value" value="4"/>
                                     </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                        <color key="value" systemColor="systemPurpleColor"/>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="thumbSliderRadius">
+                                        <real key="value" value="12"/>
                                     </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="color" keyPath="errorColor">
-                                        <color key="value" systemColor="systemRedColor"/>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="bubbleStrokeWidth">
+                                        <real key="value" value="2"/>
                                     </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                        <integer key="value" value="3"/>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="bubbleCornerRadius">
+                                        <real key="value" value="5"/>
                                     </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                        <integer key="value" value="20"/>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="slidingInterval">
+                                        <integer key="value" value="50"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </view>
@@ -63,6 +68,7 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <connections>
+                        <outlet property="slider" destination="48f-1T-Ggz" id="Mf6-Vv-GV1"/>
                         <outlet property="versionWithoutStoryBoardButton" destination="o4g-x8-iW1" id="EYs-ck-ujs"/>
                     </connections>
                 </viewController>
@@ -72,23 +78,8 @@
         </scene>
     </scenes>
     <resources>
-        <systemColor name="linkColor">
-            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemGreenColor">
-            <color red="0.20392156862745098" green="0.7803921568627451" blue="0.34901960784313724" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="systemPurpleColor">
-            <color red="0.68627450980392157" green="0.32156862745098042" blue="0.87058823529411766" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="systemRedColor">
-            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="tertiaryLabelColor">
-            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.29999999999999999" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
