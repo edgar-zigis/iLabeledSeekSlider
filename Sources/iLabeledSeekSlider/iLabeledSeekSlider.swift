@@ -10,7 +10,7 @@ import UIKit
 import AudioToolbox
 
 @IBDesignable
-class iLabeledSeekSlider: UIView {
+public class iLabeledSeekSlider: UIView {
     
     //  MARK: - Open variables -
     
