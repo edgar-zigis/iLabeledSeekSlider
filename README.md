@@ -9,18 +9,18 @@ Custom & highly configurable seek slider with sliding intervals, disabled state 
 ### Carthage
 
 ```
-github "edgar-zigis/iLabeledSeekSlider" ~> 1.0.0
+github "edgar-zigis/iLabeledSeekSlider" ~> 1.0.2
 ```
 ### Cocoapods
 
 ```
-pod 'iLabeledSeekSlider', '~> 1.0.0'
+pod 'iLabeledSeekSlider', '~> 1.0.2'
 ```
 ### Swift Package Manager
 
 ```
 dependencies: [
-    .package(url: "https://github.com/edgar-zigis/iLabeledSeekSlider.git", .upToNextMajor(from: "1.0.0"))
+    .package(url: "https://github.com/edgar-zigis/iLabeledSeekSlider.git", .upToNextMajor(from: "1.0.2"))
 ]
 ```
 ### Usage
