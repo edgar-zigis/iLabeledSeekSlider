@@ -55,4 +55,4 @@ slider.allowLimitValueBypass = false
 slider.isDisabled = false
 ```
 ### Remarks
-It can be used both programmatically and with storyboards. Samples are available at **iLabeledSeekSliderTest**
+It can be used both programmatically and with storyboards. Samples are available at **Tests/iLabeledSeekSliderTests**
