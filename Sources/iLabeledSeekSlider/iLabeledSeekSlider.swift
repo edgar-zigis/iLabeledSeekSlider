@@ -9,6 +9,11 @@
 import UIKit
 import AudioToolbox
 
+public enum iLabeledSeekSliderDelegationMode: Equatable {
+    case immediate
+    case singular
+}
+
 @IBDesignable
 public class iLabeledSeekSlider: UIView {
     
@@ -275,6 +280,11 @@ public class iLabeledSeekSlider: UIView {
     @IBInspectable
     open var slidingInterval: Int = 1
     /**
+     * .singular will emit only single event after gesture finish
+     * .immediate will emit multiple events after every progress value change
+     */
+    open var delegationMode = iLabeledSeekSliderDelegationMode.immediate
+    /**
      *  Callback reporting changed values upstream
     */
     open var onValueChanged: (Int)->() = { value in }
@@ -486,7 +496,7 @@ public class iLabeledSeekSlider: UIView {
             bubbleText = getUnitValue(value: displayValue)
             currentValue = displayValue
         }
-        if previousText != bubbleText && previousText.length > 0 {
+        if previousText != bubbleText && previousText.length > 0 && delegationMode == .immediate {
             onValueChanged(currentValue)
         }
         
@@ -631,6 +641,9 @@ public class iLabeledSeekSlider: UIView {
         if recognizer.state != .cancelled {
             positionLayers(at: lastSliderLocation + recognizer.translation(in: self).x)
         }
+        if recognizer.state == .ended && delegationMode == .singular {
+            onValueChanged(currentValue)
+        }
     }
     
     @objc private func onTap(_ recognizer: UITapGestureRecognizer) {
@@ -638,6 +651,9 @@ public class iLabeledSeekSlider: UIView {
             return
         }
         positionLayers(at: recognizer.location(in: self).x)
+        if recognizer.state == .ended && delegationMode == .singular {
+            onValueChanged(currentValue)
+        }
     }
     
     private func positionLayers(at x: CGFloat) {
