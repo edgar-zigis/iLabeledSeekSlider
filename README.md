@@ -9,7 +9,7 @@ Custom & highly configurable seek slider with sliding intervals, disabled state 
 ### Carthage
 
 ```
-github "edgar-zigis/iLabeledSeekSlider" ~> 1.0.2
+github "edgar-zigis/iLabeledSeekSlider" ~> 1.1.0
 ```
 ### Cocoapods
 
@@ -20,7 +20,7 @@ pod 'iLabeledSeekSlider', '~> 1.0.2'
 
 ```
 dependencies: [
-    .package(url: "https://github.com/edgar-zigis/iLabeledSeekSlider.git", .upToNextMajor(from: "1.0.2"))
+    .package(url: "https://github.com/edgar-zigis/iLabeledSeekSlider.git", .upToNextMajor(from: "1.1.0"))
 ]
 ```
 ### Usage
@@ -53,6 +53,7 @@ slider.bubbleValueTextColor = UIColor(red: 0.10, green: 0.10, blue: 0.10, alpha:
 slider.vibrateOnLimitReached = true
 slider.allowLimitValueBypass = false
 slider.isDisabled = false
+slider.delegationMode = .immediate
 ```
 ### Remarks
 It can be used both programmatically and with storyboards. Samples are available at **Tests/iLabeledSeekSliderTests**
